@@ -6,7 +6,7 @@ In the last chapter we saw how neural networks can learn their weights and biase
 
 At the heart of backpropagation is an expression for the partial derivative $\partial{}C/\partial{}w$ of the cost function $C$ with respect to any weight $w$ (or bias $b$) in the network. The expression tells us how quickly the cost changes when we change the weights and biases.
 
-\section{Warm up: a fast matrix-based approach to computing the output from a neural network}
+\section{A matrix-based approach to computing the output from a neural network}
 Let's review a fast matrix-based algorithm to compute the output from a neural network (section \ref{sec:1.7}).
 
 Fisrt, a notation for weights in the network. $w^l_{jk}$ will denote the weight for the connection from the $k$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer. The diagram below shows the weight on a connection from the fourth neuron in the second layer to the second neuron in the third layer of a network:
@@ -40,9 +40,9 @@ With these notations in mind, Equation~(\ref{eq:23}) can be rewritten in the bea
 a^{l} = \sigma(w^l a^{l-1}+b^l).
 \tag{25}\label{eq:25}
 \end{equation}
-Just apply the weight matrix to the activations, then add the bias vector, and finally apply the $\sigma$ function. This expression is useful because most matrix libraries provide fast ways of implementing matrix multiplication, vector addition, and vectorization. Indeed, the code (see \ref{sec:1.7}) in the last chapter made implicit use of this expression to compute the behaviour of the network.
+Just apply the weight matrix to the activations, then add the bias vector, and finally apply the $\sigma$ function. This expression is useful because most matrix libraries provide fast ways of implementing matrix multiplication, vector addition, and vectorization (see \ref{sec:1.7}).
 
-When using Equation~(\ref{eq:25}) to compute $a^l$, we compute the intermediate quantity $z^l \equiv w^l a^{l-1}+b^l$ along the way. This quantity turns out to be useful enough to be worth naming: we call $z^l$ the weighted input to the neurons in layer $l$. We'll make considerable use of the weighted input $z^l$ later in the chapter. Equation~(\ref{eq:25}) is sometimes written in terms of the weighted input, as $a^l=\sigma(z^l)$. It's also worth noting that $z^l$ has components $z^l_j= \sum_k w^l_{jk} a^{l-1}_k+b^l_j$, that is, $z^l_j$ is just the weighted input to the activation function for neuron $j$ in layer $l$.
+When using Equation~(\ref{eq:25}) to compute $a^l$, we compute the intermediate quantity $z^l = w^l a^{l-1}+b^l$. We call $z^l$ the weighted input to the neurons in layer $l$. Equation~(\ref{eq:25}) is sometimes written in terms of the weighted input, as $a^l=\sigma(z^l)$.
 
 \section{The two assumptions we need about the cost function}
 The goal of backpropagation is to compute the partial derivatives $\partial{}C/\partial{}w$ and $\partial{}C/\partial{}b$ of the cost function C with respect to any weight w or bias b in the network. For backpropagation to work we need to make two main assumptions about the form of the cost function. Before stating those assumptions, though, it's useful to have an example cost function in mind. We'll use the quadratic cost function from last chapter (c.f. Equation~(\ref{eq:6})). In the notation of the last section, the quadratic cost has the form
