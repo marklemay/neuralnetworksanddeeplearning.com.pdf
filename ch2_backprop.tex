@@ -9,23 +9,24 @@ At the heart of backpropagation is an expression for the partial derivative $\pa
 \section{Warm up: a fast matrix-based approach to computing the output from a neural network}
 Let's review a fast matrix-based algorithm to compute the output from a neural network (section \ref{sec:1.7}).
 
-Let's begin with a notation for weights in the network. $w^l_{jk}$ will denote the weight for the connection from the $k$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer. The diagram below shows the weight on a connection from the fourth neuron in the second layer to the second neuron in the third layer of a network:
+Fisrt, a notation for weights in the network. $w^l_{jk}$ will denote the weight for the connection from the $k$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer. The diagram below shows the weight on a connection from the fourth neuron in the second layer to the second neuron in the third layer of a network:
 
 \begin{center}
 	\includegraphics[width=0.7\linewidth]{./figures/ch2/tikz16.png}
 \end{center}
-This notation is cumbersome at first, and it does take some work to master. But with a little effort you'll find the notation becomes easy and natural. One quirk of the notation is the ordering of the j and k indices. You might think that it makes more sense to use j to refer to the input neuron, and k to the output neuron, not vice versa, as is actually done. I'll explain the reason for this quirk below.
+
+%% break into mutiple paragraphs
 We use a similar notation for the network's biases and activations. Explicitly, we use $b^l_j$ for the bias of the $j$-th neuron in the $l$-th layer. And we use $a^l_j$ for the activation of the $j$-th neuron in the $l$-th layer. The following diagram shows examples of these notations in use:
 \begin{center}
 \includegraphics[width=0.45\linewidth]{./figures/ch2/tikz17.png}
 \end{center}
-With these notations, the activation $a^l_j$ of the $j$-th neuron in the $l$-th layer is related to the activations in the $(l-1)$-th layer by the equation (compare Equation~(\ref{eq:4}) and surrounding discussion in the last chapter)
+With these notations, the activation $a^l_j$ of the $j$-th neuron in the $l$-th layer is related to the activations in the $(l-1)$-th layer by the equation (compare Equation~(\ref{eq:4}))
 
 \begin{equation}
 	a^{l}_j = \sigma\left( \sum_k w^{l}_{jk} a^{l-1}_k + b^l_j \right),\tag{23}\label{eq:23}
 \end{equation}
-where the sum is over all neurons $k$ in the $(l-1)$-th layer. To rewrite this expression in a matrix form we define a \textit{weight matrix} $w^l$ for each layer, $l$. The entries of the weight matrix $w^l$ are just the weights connecting to the $l$-th layer of neurons, that is, the entry in the $j$-th row and $k$-th column is $w^l_{jk}$. Similarly, for each layer $l$ we define a \textit{bias vector}, $b^l$. You can probably guess how this works -- the components of the bias vector are just the values $b^l_j$, one component for each neuron in the $l$-th layer. And finally, we define an activation vector al whose components are the activations $a^l_j$.
-The last ingredient we need to rewrite (\ref{eq:23}) in a matrix form is the idea of vectorizing a function such as $\sigma$. We met vectorization briefly in the last chapter, but to recap, the idea is that we want to apply a function such as $\sigma$ to every element in a vector $v$. We use the obvious notation $\sigma(v)$ to denote this kind of elementwise application of a function. That is, the components of $\sigma(v)$ are just $\sigma(v)_j = \sigma(v_j)$. As an example, if we have the function $f(x)=x^2$ then the vectorized form of $f$ has the effect
+where the sum is over all neurons $k$ in the $(l-1)$-th layer. To rewrite this expression in a matrix form, define a \textit{weight matrix} $w^l$ for each layer, $l$. The entries of $w^l$ are the weights connecting to the $l$-th layer of neurons. That is, the entry in the $j$-th row and $k$-th column is $w^l_{jk}$. Similarly, for each layer $l$ we define a \textit{bias vector}, $b^l$. The components of the bias vector are just the values $b^l_j$, one component for each neuron in the $l$-th layer. And an activation vector $a^l$ whose components are the activations $a^l_j$.
+The last ingredient we need to rewrite (\ref{eq:23}) in a matrix form is a way to ``vectorize'' a function, such as $\sigma$. We want to apply a function such as $\sigma$ to every element in a vector $v$. We use the notation $\sigma(v)$ to denote elementwise application of a function. That is, the components of $\sigma(v)$ are $\sigma(v)_j = \sigma(v_j)$. As an example, if we have the function $f(x)=x^2$ then the vectorized form of $f$ has the effect
 \begin{equation}
 f\left(\left[ \begin{array}{c} 2 \\ 3 \end{array} \right] \right)
 = \left[ \begin{array}{c} f(2) \\ f(3) \end{array} \right]
@@ -39,7 +40,7 @@ With these notations in mind, Equation~(\ref{eq:23}) can be rewritten in the bea
 a^{l} = \sigma(w^l a^{l-1}+b^l).
 \tag{25}\label{eq:25}
 \end{equation}
-This expression gives us a much more global way of thinking about how the activations in one layer relate to activations in the previous layer: we just apply the weight matrix to the activations, then add the bias vector, and finally apply the $\sigma$ function\footnote{By the way, it's this expression that motivates the quirk in the $w^l_{jk}$ notation mentioned earlier. If we used $j$ to index the input neuron, and $k$ to index the output neuron, then we'd need to replace the weight matrix in Equation~(\ref{eq:25}) by the transpose of the weight matrix. That's a small change, but annoying, and we'd lose the easy simplicity of saying (and thinking) ``apply the weight matrix to the activations''.}. That global view is often easier and more succinct (and involves fewer indices!) than the neuron-by-neuron view we've taken to now. Think of it as a way of escaping index hell, while remaining precise about what's going on. The expression is also useful in practice, because most matrix libraries provide fast ways of implementing matrix multiplication, vector addition, and vectorization. Indeed, the code (see \ref{sec:1.7}) in the last chapter made implicit use of this expression to compute the behaviour of the network.
+Just apply the weight matrix to the activations, then add the bias vector, and finally apply the $\sigma$ function. This expression is useful because most matrix libraries provide fast ways of implementing matrix multiplication, vector addition, and vectorization. Indeed, the code (see \ref{sec:1.7}) in the last chapter made implicit use of this expression to compute the behaviour of the network.
 
 When using Equation~(\ref{eq:25}) to compute $a^l$, we compute the intermediate quantity $z^l \equiv w^l a^{l-1}+b^l$ along the way. This quantity turns out to be useful enough to be worth naming: we call $z^l$ the weighted input to the neurons in layer $l$. We'll make considerable use of the weighted input $z^l$ later in the chapter. Equation~(\ref{eq:25}) is sometimes written in terms of the weighted input, as $a^l=\sigma(z^l)$. It's also worth noting that $z^l$ has components $z^l_j= \sum_k w^l_{jk} a^{l-1}_k+b^l_j$, that is, $z^l_j$ is just the weighted input to the activation function for neuron $j$ in layer $l$.
 
