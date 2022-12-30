@@ -1388,12 +1388,12 @@ C(w+\Delta w)  =  C(w) + \sum_j \frac{\partial C}{\partial w_j} \Delta w_j + \fr
 \end{equation}
 %C(w+Δw)=C(w)+∑j∂C∂wjΔwj+12∑jkΔwj∂2C∂wj∂wkΔwk+…(103)
 We can rewrite this more compactly as
-%C(w+Δw)=C(w)+∇C⋅Δw+12ΔwTHΔw+…,(104)
+%C(w+Δw)=C(w)+∇C  \cdot Δw+12ΔwTHΔw+…,(104)
 \begin{equation}
 C(w+\Delta w) = C(w) + \nabla C \cdot \Delta w + \frac{1}{2} \Delta w^T H \Delta w + \ldots, \tag{104}\label{eq:104}
 \end{equation}
 where $\nabla C$ is the usual gradient vector, and $H$ is a matrix known as the \textit{Hessian matrix}, whose $jk$-th entry is $\partial^2C / \partial w_j \partial w_k$. Suppose we approximate $C$ by discarding the higher-order terms represented by $\ldots$ above,
-%C(w+Δw)≈C(w)+∇C⋅Δw+12ΔwTHΔw.(105)
+%C(w+Δw)≈C(w)+∇C  \cdot Δw+12ΔwTHΔw.(105)
 \begin{equation} 
 C(w+\Delta w) \approx C(w) + \nabla C \cdot \Delta w + \frac{1}{2} \Delta w^T H \Delta w. \tag{105}\label{eq:105}
 \end{equation}
@@ -1453,7 +1453,7 @@ Perhaps the simplest variation is the tanh (pronounced ``tanch'') neuron, which 
 \begin{equation}
 \tanh(w \cdot x+b), \tag{109}\label{eq:109}
 \end{equation}
-%tanh(w⋅x+b),(109)
+%tanh(w  \cdot x+b),(109)
 where $\tanh$ is, of course, the hyperbolic tangent function. It turns out that this is very closely related to the sigmoid neuron. To see this, recall that the tanh function is defined by
 \begin{equation}
 \tanh(z) \equiv \frac{e^z-e^{-z}}{e^z+e^{-z}}. \tag{110}\label{eq:110}
@@ -1487,7 +1487,7 @@ Another variation on the sigmoid neuron is the \textit{rectified linear neuron} 
 \begin{equation}
 \max(0, w \cdot x+b). \tag{112}\label{eq:112}
 \end{equation}
-%max(0,w⋅x+b).(112)
+%max(0,w  \cdot x+b).(112)
 Graphically, the rectifying function $\max(0,z)$ looks like this:
 \begin{center} 
 	\begin{tikzpicture}
