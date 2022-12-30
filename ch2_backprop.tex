@@ -76,7 +76,7 @@ C = \frac{1}{2} \left\|y-a^L\right\|^2 = \frac{1}{2} \sum_j \left(y_j-a^L_j\righ
 and thus is a function of the output activations.
 
 \section{The Hadamard product, $s\odot{}t$}
-The backpropagation algorithm is based on common linear algebraic operations -- things like vector addition, multiplying a vector by a matrix, and so on. But one of the operations is a little less commonly used. In particular, suppose $s$ and $t$ are two vectors of the same dimension. Then we use $s\odot{}t$ to denote the elementwise product of the two vectors. Thus the components of $s\odot{}t$ are just $(s \odot t)_j = s_j t_j$. As an example,
+Suppose $s$ and $t$ are two vectors of the same dimension. Then we use $s\odot{}t$ to denote the elementwise product of the two vectors. Thus the components of $s\odot{}t$ are $(s \odot t)_j = s_j t_j$. As an example,
 \begin{equation}
 	\left[\begin{array}{c} 1 \\ 2 \end{array}\right] 
 	\odot \left[\begin{array}{c} 3 \\ 4\end{array} \right]
@@ -84,11 +84,11 @@ The backpropagation algorithm is based on common linear algebraic operations -- 
 	= \left[ \begin{array}{c} 3 \\ 8 \end{array} \right].
 	\tag{28}\label{eq:28}
 \end{equation}
-This kind of elementwise multiplication is sometimes called the \textit{Hadamard product} or \textit{Schur product}. We'll refer to it as the Hadamard product. Good matrix libraries usually provide fast implementations of the Hadamard product, and that comes in handy when implementing backpropagation.
+This kind of elementwise multiplication is called the \textit{Hadamard product} or \textit{Schur product}. Good matrix libraries usually provide fast implementations of the Hadamard product, and that comes in handy when implementing backpropagation.
 
 \section{The four fundamental equations behind backpropagation}
 \label{sec:2.4}
-Backpropagation is about understanding how changing the weights and biases in a network changes the cost function. Ultimately, this means computing the partial derivatives $\partial{}C/\partial{}w^l_{jk}$ and $\partial{}C/\partial{}b^l_j$. But to compute those, we first introduce an intermediate quantity, $\delta^l_j$, which we call the \textit{error} in the $j$-th neuron in the $l$-th layer. Backpropagation will give us a procedure to compute the error $\delta^l_j$, and then will relate $\delta^l_j$ to $\partial{}C/\partial{}w^l_{jk}$ and $\partial{}C/\partial{}b^l_j$.
+Backpropagation is about understanding how changing the weights and biases in a network changes the cost function. Ultimately, this means computing the partial derivatives $\partial{}C/\partial{}w^l_{jk}$ and $\partial{}C/\partial{}b^l_j$. To compute those, we introduce an intermediate quantity, $\delta^l_j$, which we call the \textit{error} in the $j$-th neuron in the $l$-th layer. Backpropagation will give us a procedure to compute the error $\delta^l_j$, and then will relate $\delta^l_j$ to $\partial{}C/\partial{}w^l_{jk}$ and $\partial{}C/\partial{}b^l_j$.
 
 To understand how the error is defined, imagine there is a demon in our neural network:
 
@@ -97,15 +97,13 @@ To understand how the error is defined, imagine there is a demon in our neural n
 \end{center}
 The demon sits at the $j$-th neuron in layer $l$. As the input to the neuron comes in, the demon messes with the neuron's operation. It adds a little change $\Delta{}z^l_j$ to the neuron's weighted input, so that instead of outputting $\sigma(z^l_j)$, the neuron instead outputs $\sigma(z^l_j+\Delta{}z^l_j)$. This change propagates through later layers in the network, finally causing the overall cost to change by an amount $\frac{\partial{}C}{\partial{}z^l_j}\Delta{}z^l_j$.
 
-Now, this demon is a good demon, and is trying to help you improve the cost, i.e., they're trying to find a $\Delta{}z^l_j$ which makes the cost smaller. Suppose $\partial{}C/\partial{}z^l_j$ has a large value (either positive or negative). Then the demon can lower the cost quite a bit by choosing $\Delta{}z^l_j$ to have the opposite sign to $\partial{}C/\partial{}z^l_j$. By contrast, if $\partial{}C/\partial{}z^l_j$ is close to zero, then the demon can't improve the cost much at all by perturbing the weighted input $z^l_j$. So far as the demon can tell, the neuron is already pretty near optimal\footnote{This is only the case for small changes $\Delta{}z^l_j$, of course. We'll assume that the demon is constrained to make such small changes.}. And so there's a heuristic sense in which $\partial{}C/\partial{}z^l_j$ is a measure of the error in the neuron.
+Now, this demon is a good demon, and is trying to help you improve the cost, i.e., they're trying to find a $\Delta{}z^l_j$ which makes the cost smaller. Suppose $\partial{}C/\partial{}z^l_j$ has a large value (either positive or negative). Then the demon can lower the cost quite a bit by choosing $\Delta{}z^l_j$ to have the opposite sign to $\partial{}C/\partial{}z^l_j$. By contrast, if $\partial{}C/\partial{}z^l_j$ is close to zero, then the demon can't improve the cost much at all by perturbing the weighted input $z^l_j$. So far as the demon can tell, the neuron is already pretty near optimal. And so there's a heuristic sense in which $\partial{}C/\partial{}z^l_j$ is a measure of the error in the neuron.
 
 Motivated by this story, we define the error $\delta^l_j$ of neuron $j$ in layer $l$ by
 \begin{equation}
-	\delta^l_j\equiv\frac{\partial{}C}{\partial{}z^l_j}.\tag{29}\label{eq:29}
+	\delta^l_j = \frac{\partial{}C}{\partial{}z^l_j}.\tag{29}\label{eq:29}
 \end{equation}
-As per our usual conventions, we use $\delta{}^l$ to denote the vector of errors associated with layer $l$. Backpropagation will give us a way of computing $\delta{}^l$ for every layer, and then relating those errors to the quantities of real interest, $\partial{}C/\partial{}w^l_{jk}$ and $\partial{}C/\partial{}b^l_j$.
-
-You might wonder why the demon is changing the weighted input $z^l_j$. Surely it'd be more natural to imagine the demon changing the output activation $a^l_j$, with the result that we'd be using $\frac{\partial{}C}{\partial{}a^l_j}$ as our measure of error. In fact, if you do this things work out quite similarly to the discussion below. But it turns out to make the presentation of backpropagation a little more algebraically complicated. So we'll stick with $\delta^l_j=\frac{\partial{}C}{\partial{}z^l_j}$ as our measure of error\footnote{In classification problems like MNIST the term ``error'' is sometimes used to mean the classification failure rate. E.g., if the neural net correctly classifies 96.0 percent of the digits, then the error is 4.0 percent. Obviously, this has quite a different meaning from our $\delta$ vectors. In practice, you shouldn't have trouble telling which meaning is intended in any given usage.}.
+We use $\delta{}^l$ to denote the vector of errors associated with layer $l$. Backpropagation will give us a way of computing $\delta{}^l$ for every layer, and then relating those errors to the quantities of interest, $\partial{}C/\partial{}w^l_{jk}$ and $\partial{}C/\partial{}b^l_j$.
 
 \textbf{Plan of attack}: Backpropagation is based around four fundamental equations. Together, those equations give us a way of computing both the error $\delta{}^l$ and the gradient of the cost function. I state the four equations below. Be warned, though: you shouldn't expect to instantaneously assimilate the equations. Such an expectation will lead to disappointment. In fact, the backpropagation equations are so rich that understanding them well requires considerable time and patience as you gradually delve deeper into the equations. The good news is that such patience is repaid many times over. And so the discussion in this section is merely a beginning, helping you on the way to a thorough understanding of the equations.
 
