@@ -137,29 +137,29 @@ Here, $\nabla_a C$ is the vector whose components are the partial derivatives $\
 \tag{30}\label{eq:30}
 \end{equation}
 
-\textbf{An equation for the error $\delta^l$ in terms of the error in the next layer}, $\delta^{l+1}$: In particular
+\textbf{An equation for the error $\delta^l$ in terms of the error in the next layer}, $\delta^{l+1}$:
 \begin{equation}
 	\delta^l = \left((w^{l+1})^T \delta^{l+1}\right) \odot \sigma'(z^l),
 	\tag{BP2}\label{eq:BP2}
 \end{equation}
 %$\delta^l$=(($w^{l+1}$)T$\delta^{l+1}$)⊙$\sigma$′(zl),(\ref{eq:BP2})
-where $(w^{l+1})^T$ is the transpose of the weight matrix $w^{l+1}$ for the ($l$+1)-th layer. This equation appears complicated, but each element has a nice interpretation. Suppose we know the error $\delta^{l+1}$ at the ($l$+1)-th layer. When we apply the transpose weight matrix, $(w^{l+1})^T$, we can think intuitively of this as moving the error \textit{backward} through the network, giving us some sort of measure of the error at the output of the $l$-th layer. We then take the Hadamard product $\odot \sigma'(z^l)$. This moves the error backward through the activation function in layer $l$, giving us the error $\delta^l$ in the weighted input to layer $l$.
+where $(w^{l+1})^T$ is the transpose of the weight matrix $w^{l+1}$ for the ($l$+1)-th layer. Suppose we know the error $\delta^{l+1}$ at the ($l$+1)-th layer. When we apply the transpose weight matrix, $(w^{l+1})^T$, we can think of this as moving the error \textit{backward} through the network, giving us some sort of the error at the output of the $l$-th layer. We then take the Hadamard product $\odot \sigma'(z^l)$. This moves the error backward through the activation function in layer $l$, giving us the error $\delta^l$ in the weighted input to layer $l$.
 
 By combining (\ref{eq:BP2}) with (\ref{eq:BP1}) we can compute the error $\delta^l$ for any layer in the network. We start by using (\ref{eq:BP1}) to compute $\delta^L$, then apply Equation~(\ref{eq:BP2}) to compute $\delta^{L-1}$, then Equation~(\ref{eq:BP2}) again to compute $\delta^{L-2}$, and so on, all the way back through the network.
 
-\textbf{An equation for the rate of change of the cost with respect to any bias in the network:} In particular:
+\textbf{An equation for the rate of change of the cost with respect to any bias in the network:}
 %\partial{}C\partial{}b^l_j=\delta^l_j.(\ref{eq:BP3})
 \begin{equation}
 \frac{\partial C}{\partial b^l_j} = \delta^l_j.
 \tag{BP3}\label{eq:BP3}
 \end{equation}
-That is, the error $\delta^l_j$ is \textit{exactly equal} to the rate of change $\partial{}C/\partial{}b^l_j$. This is great news, since (\ref{eq:BP1}) and (\ref{eq:BP2}) have already told us how to compute $\delta^l_j$. We can rewrite (\ref{eq:BP3}) in shorthand as
+That is, the error $\delta^l_j$ is \textit{exactly equal} to the rate of change $\partial{}C/\partial{}b^l_j$. This is great news, since (\ref{eq:BP1}) and (\ref{eq:BP2}) have already told us how to compute $\delta^l_j$. We can rewrite (\ref{eq:BP3}) as
 \begin{equation}
-\frac{\partial C}{\partial b} = \delta,\tag{31}\label{eq:31}
+\frac{\partial C}{\partial b} = \delta,\tag{31}\label{eq:31} % TODO use consitent formula names: BP3b?, or even better BP3i for the indexed version, BP3 for non indexed?
 \end{equation}
-where it is understood that $\delta$ is being evaluated at the same neuron as the bias $b$.
+where it is understood that $\delta$ is being evaluated at the same neuron as the bias $b$.  % TODO never mind just put the indexes back in and ignore this sentence
 
-\textbf{An equation for the rate of change of the cost with respect to any weight in the network:} In particular:
+\textbf{An equation for the rate of change of the cost with respect to any weight in the network:}
 %\partial{}C\partial{}w^l_{jk}=al-1k\delta^l_j.(\ref{eq:BP4})
 \begin{equation}
 \frac{\partial C}{\partial w^l_{jk}} = a^{l-1}_k \delta^l_j.
@@ -176,15 +176,15 @@ where it's understood that $a_\mathrm{in}$ is the activation of the neuron input
 \begin{center}
 	\includegraphics[width=0.35\linewidth]{./figures/ch2/tikz20.png}
 \end{center}
-A nice consequence of Equation~(\ref{eq:32}) is that when the activation $a_\mathrm{in}$ is small, $a_\mathrm{in}\approx0$, the gradient term $\partial{}C/\partial{}w$ will also tend to be small. In this case, we'll say the weight \textit{learns slowly}, meaning that it's not changing much during gradient descent. In other words, one consequence of (\ref{eq:BP4}) is that weights output from low-activation neurons learn slowly.
+A nice consequence of Equation~(\ref{eq:32}) is that when the activation $a_\mathrm{in}$ is small, $a_\mathrm{in}\approx0$, the gradient term $\partial{}C/\partial{}w$ will also tend to be small. In this case, we'll say the weight \textit{learns slowly}, meaning that it's not changing much during gradient descent. Weights output from low-activation neurons learn slowly.
 
-There are other insights along these lines which can be obtained from (\ref{eq:BP1})--(\ref{eq:BP4}). Let's start by looking at the output layer. Consider the term $\sigma'(z^L_j)$ in (\ref{eq:BP1}). Recall from the graph of the sigmoid function in the last chapter that the $\sigma$ function becomes very flat when $\sigma(z^L_j)$ is approximately 0 or 1. When this occurs we will have $\sigma'(z^L_j)\approx0$. And so the lesson is that a weight in the final layer will learn slowly if the output neuron is either low activation ($\approx0$) or high activation ($\approx1$). In this case it's common to say the output neuron has \textit{saturated} and, as a result, the weight has stopped learning (or is learning slowly). Similar remarks hold also for the biases of output neuron.
+There are other insights along these lines which can be obtained from (\ref{eq:BP1})--(\ref{eq:BP4}). Let's start by looking at the output layer. Consider the term $\sigma'(z^L_j)$ in (\ref{eq:BP1}). Recall that the $\sigma$ function becomes very flat when $\sigma(z^L_j)$ is approximately $0$ or $1$. When this occurs we will have $\sigma'(z^L_j)\approx0$. So the weight in the final layer will learn slowly if the output neuron is either low activation ($\approx0$) or high activation ($\approx1$). In this case neuron is \textit{saturated} and, as a result, the weight has stopped learning (or is learning slowly). Similar remarks hold also for the biases of output neuron. % TODO be specifc
 
-We can obtain similar insights for earlier layers. In particular, note the $\sigma'(z^l)$ term in (\ref{eq:BP2}). This means that $\delta^l_j$ is likely to get small if the neuron is near saturation. And this, in turn, means that any weights input to a saturated neuron will learn slowly\footnote{This reasoning won't hold if $(w^{l+1})^T\delta^{l+1}$ has large enough entries to compensate for the smallness of $\sigma'(z^l_j)$. But I'm speaking of the general tendency.}.
+We can obtain similar insights for earlier layers. Note the $\sigma'(z^l)$ term in (\ref{eq:BP2}). This means that $\delta^l_j$ is likely to get small if the neuron is near saturation. And this, in turn, means that any weights input to a saturated neuron will tend to learn slowly.
 
-Summing up, we've learnt that a weight will learn slowly if either the input neuron is low-activation, or if the output neuron has saturated, i.e., is either high- or low-activation.
+A weight will learn slowly if either the input neuron is low-activation, or if the output neuron has saturated, i.e., is either high- or low-activation.
 
-None of these observations is too greatly surprising. Still, they help improve our mental model of what's going on as a neural network learns. Furthermore, we can turn this type of reasoning around. The four fundamental equations turn out to hold for any activation function, not just the standard sigmoid function (that's because, as we'll see in a moment, the proofs don't use any special properties of $\sigma$). And so we can use these equations to design activation functions which have particular desired learning properties. As an example to give you the idea, suppose we were to choose a (non-sigmoid) activation function $\sigma$ so that $\sigma'$ is always positive, and never gets close to zero. That would prevent the slow-down of learning that occurs when ordinary sigmoid neurons saturate. Later in the book we'll see examples where this kind of modification is made to the activation function. Keeping the four equations (\ref{eq:BP1})--(\ref{eq:BP4}) in mind can help explain why such modifications are tried, and what impact they can have.
+The four fundamental equations turn out to hold for any activation function, not just the standard sigmoid function (that's because, as we'll see in a moment, the proofs don't use any special properties of $\sigma$). And so we can use these equations to design activation functions which have particular desired learning properties. As an example to give you the idea, suppose we were to choose a (non-sigmoid) activation function $\sigma$ so that $\sigma'$ is always positive, and never gets close to zero. That would prevent the slow-down of learning that occurs when ordinary sigmoid neurons saturate. Later in the book we'll see examples where this kind of modification is made to the activation function. Keeping the four equations (\ref{eq:BP1})--(\ref{eq:BP4}) in mind can help explain why such modifications are tried, and what impact they can have.
 \begin{center}
 	\includegraphics[width=0.65\linewidth]{figures/ch2/tikz21.png}
 \end{center}
