@@ -30,6 +30,7 @@ jobs:
       - name: Compile book LaTeX
         uses: xu-cheng/latex-action@v2
         with:
+          compiler: lualatex
           root_file: book.tex
 
       - name: Create Release
